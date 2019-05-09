@@ -1,7 +1,16 @@
 const Event = require('../../models/event');
 const User = require('../../models/user');
+const DataLoader = require('dataloader');
 
 const { dateToString } = require('../../utils/date');
+
+const eventLoader = new DataLoader((eventIds) => {
+  return eventsRecursive(eventIds);
+});
+
+const userLoader = new DataLoader( userIds => {
+  return User.find({_id: {$in: userIds}});
+});
 
 const eventsRecursive = async eventsIds => {
   try {
@@ -21,14 +30,15 @@ const eventsRecursive = async eventsIds => {
 
 const userRecursive = async userId => {
   try {
-    const user = await User.findById(userId);
+    const user = await userLoader.load(userId.toString());
     if (!user) {
       throw new Error('User doesnt exist');
     }
     return {
       ...user._doc,
        _id: user.id, 
-       createdEvents: eventsRecursive.bind(this, user.createdEvents)}
+       createdEvents: () => eventLoader.loadMany(user.createdEvents)
+      }
   }
   catch (err) {
     throw err;
@@ -37,11 +47,11 @@ const userRecursive = async userId => {
 
 const singleEventRecursive = async eventId => {
   try {
-    const event = await Event.findById(eventId);
+    const event = await eventLoader.load(eventId.toString());
     if (!event) {
      throw new Error('Could not find an event'); 
     }
-    return transformEvent(event);
+    return event;
 
   } catch(err) {
     throw err;

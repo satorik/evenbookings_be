@@ -1,0 +1,12 @@
+.bookings__list {
+  list-style: 0;
+  margin: 0;
+  padding: 0;
+}
+
+@media (min-width: 768px) {
+  .bookings__list {
+    width: 60rem;
+    margin: 2rem auto;
+  }
+}
