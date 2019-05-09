@@ -53,7 +53,7 @@ const transformEvent = event => {
     ...event._doc,
     _id: event.id,
     date: dateToString(event.date),
-    creator: userRecursive.bind(this, event._doc.creator)
+    creator: userRecursive.bind(this, event.creator)
   }
 }
 
