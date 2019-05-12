@@ -15,6 +15,11 @@ const userLoader = new DataLoader( userIds => {
 const eventsRecursive = async eventsIds => {
   try {
     const events = await Event.find({_id: {$in: eventsIds}});
+    events.sort((a,b) => {
+      return (
+        eventsIds.indexOf(a._id.toString()) - eventsIds.indexOf(b._id.toString())
+        );
+    });
     if (!events) {
       throw new Error('Could not fetch events');
     }
